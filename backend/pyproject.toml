@@ -9,6 +9,7 @@ python = "^3.8"
 fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
 sqlalchemy = "^1.4.25"
+aiosqlite = "^0.20.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
