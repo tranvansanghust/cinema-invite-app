@@ -6,7 +6,6 @@ __pycache__/
 
 # C extensions
 *.so
-
 # Distribution / packaging
 .Python
 env/
@@ -53,3 +52,5 @@ dmypy.json
 
 # Pyre
 .pyre/
+
+.env
