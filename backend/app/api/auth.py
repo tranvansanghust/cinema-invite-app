@@ -39,7 +39,9 @@ async def google_callback(request: Request):
             user = await google_sso.verify_and_process(request)
         
         print("User info:", user)
+        
         response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
         return response
     
     except ValueError as e:
