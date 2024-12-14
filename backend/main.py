@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse  # Import FileResponse
 app = FastAPI()
 
 # Mount the build directory to the root path
-app.mount("/static", StaticFiles(directory="../frontend/build/static"), name="static")
+app.mount("/static", StaticFiles(directory="../frontend/build/static", html=True), name="static")
 
 # Configure CORS
 app.add_middleware(
@@ -33,4 +33,15 @@ app.include_router(auth_router, prefix="/api/v1")
 @app.get("/")
 def read_root():
     return FileResponse("../frontend/build/index.html")
-    # return {"Hello": "World"}
+
+@app.get("/search")
+def read_search():
+    return FileResponse("../frontend/build/index.html")
+
+@app.get("/login")
+def read_login():
+    return FileResponse("../frontend/build/index.html")
+
+@app.get("/profile")
+def read_profile():
+    return FileResponse("../frontend/build/index.html")
