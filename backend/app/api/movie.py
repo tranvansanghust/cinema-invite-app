@@ -1,4 +1,5 @@
 
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
@@ -26,7 +27,7 @@ def read_movie(movie_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movie not found")
     return db_movie
 
-@router.get("/movies/", response_model=list[schemas.Movie])
+@router.get("/movies/", response_model=List[schemas.Movie])
 def read_movies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     movies = crud.get_movies(db, skip=skip, limit=limit)
     return movies
