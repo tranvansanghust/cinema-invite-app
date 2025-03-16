@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "fastapi service",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "/Users/sangtran/Library/Caches/pypoetry/virtualenvs/cinema-invite-app-iE41PsDf-py3.9/bin/python",
+            "cwd": "${workspaceFolder}/backend",
+            "module": "uvicorn",
+            "justMyCode": false,
+            "args": [
+                "main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--reload"
+            ]
+        }
+    ]
+}
