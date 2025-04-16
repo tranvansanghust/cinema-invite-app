@@ -6,14 +6,14 @@ from ..models.invitation import Invitation
 
 router = APIRouter()
 
-@router.get("/invitations/{invitation_id}", response_model=InvitationCreate)
+@router.get("/invitations/{invitation_id}", response_model=InvitationCreate, tags=["Invitations"])
 def get_invitation(invitation_id: int, db: Session = Depends(get_db)):
     invitation = db.query(Invitation).filter(Invitation.invitationid == invitation_id).first()
     if not invitation:
         raise HTTPException(status_code=404, detail="Invitation not found")
     return invitation
 
-@router.delete("/invitations/{invitation_id}")
+@router.delete("/invitations/{invitation_id}", tags=["Invitations"])
 def delete_invitation(invitation_id: int, db: Session = Depends(get_db)):
     invitation = db.query(Invitation).filter(Invitation.invitationid == invitation_id).first()
     if not invitation:
@@ -22,7 +22,7 @@ def delete_invitation(invitation_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Invitation deleted successfully"}
 
-@router.put("/invitations/{invitation_id}", response_model=InvitationCreate)
+@router.put("/invitations/{invitation_id}", response_model=InvitationCreate, tags=["Invitations"])
 def update_invitation(invitation_id: int, updated_invitation: InvitationCreate, db: Session = Depends(get_db)):
     invitation = db.query(Invitation).filter(Invitation.invitationid == invitation_id).first()
     if not invitation:
@@ -32,6 +32,8 @@ def update_invitation(invitation_id: int, updated_invitation: InvitationCreate, 
     db.commit()
     db.refresh(invitation)
     return invitation
+
+@router.post("/invitations/add", response_model=InvitationCreate, tags=["Invitations"])
 def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db)):
     db_invitation = Invitation(
         userid=invitation.userid,
