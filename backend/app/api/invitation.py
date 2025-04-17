@@ -35,16 +35,24 @@ def update_invitation(invitation_id: int, updated_invitation: InvitationCreate, 
 
 @router.post("/invitations/add", response_model=InvitationCreate, tags=["Invitations"])
 def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db)):
-    db_invitation = Invitation(
-        userid=invitation.userid,
-        movieid=invitation.movieid,
-        text=invitation.text,
-        image_urls=";".join(invitation.image_urls),
-        cinema_ids=";".join(invitation.cinema_ids),
-        status=invitation.status,
-        amount_of_reach=invitation.amount_of_reach,
-    )
-    db.add(db_invitation)
-    db.commit()
-    db.refresh(db_invitation)
-    return invitation
+    try:
+        db_invitation = Invitation(
+            userid=invitation.userid,
+            movieid=invitation.movieid,
+            text=invitation.text,
+            image_urls=";".join(invitation.image_urls),
+            cinema_ids=";".join(invitation.cinema_ids),
+            status=invitation.status,
+            amount_of_reach=invitation.amount_of_reach,
+        )
+        db.add(db_invitation)
+        db.commit()
+        db.refresh(db_invitation)
+        return invitation
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to create invitation")
+    finally:
+        db.close()
+    
