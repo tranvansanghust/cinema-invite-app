@@ -39,12 +39,12 @@ def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db
         userid=invitation.userid,
         movieid=invitation.movieid,
         text=invitation.text,
-        image_urls=invitation.image_urls,
-        cinema_ids=invitation.cinema_ids,
+        image_urls=";".join(invitation.image_urls),
+        cinema_ids=";".join(invitation.cinema_ids),
         status=invitation.status,
         amount_of_reach=invitation.amount_of_reach,
     )
     db.add(db_invitation)
     db.commit()
     db.refresh(db_invitation)
-    return db_invitation
+    return invitation
