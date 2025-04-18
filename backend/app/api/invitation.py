@@ -1,5 +1,8 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+from ..crud import invitation as invitation_crud
 from ..database import get_db
 from ..schemas.invitation import InvitationCreate
 from ..models.invitation import Invitation
@@ -56,3 +59,18 @@ def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db
     finally:
         db.close()
     
+@router.get("/invitations/", response_model=List[InvitationCreate], tags=["Invitations"])
+def get_invitations(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    try:
+        invitations = invitation_crud.retrieve_all_invitations(db, skip=skip, limit=limit)
+        res = []
+        for invitation in invitations:
+            print(invitation)
+            res.append(invitation)
+
+        return res
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to retrieve invitations" + str(e))
+    finally:
+        db.close()
