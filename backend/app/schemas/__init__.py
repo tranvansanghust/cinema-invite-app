@@ -1,2 +1,3 @@
 from .movie import Movie, MovieCreate
+from .invitation import Invitation, InvitationCreate
 # ...import other schemas as needed...

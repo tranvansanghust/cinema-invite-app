@@ -2,6 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from .. import schemas
+
 from ..crud import invitation as invitation_crud
 from ..database import get_db
 from ..schemas.invitation import InvitationCreate
@@ -30,8 +32,17 @@ def update_invitation(invitation_id: int, updated_invitation: InvitationCreate, 
     invitation = db.query(Invitation).filter(Invitation.invitationid == invitation_id).first()
     if not invitation:
         raise HTTPException(status_code=404, detail="Invitation not found")
-    for key, value in updated_invitation.dict().items():
+    
+    # Update fields, converting lists to strings for MySQL storage
+    update_data = updated_invitation.dict()
+    if 'image_urls' in update_data and update_data['image_urls']:
+        update_data['image_urls'] = ";".join(update_data['image_urls'])
+    if 'cinema_ids' in update_data and update_data['cinema_ids']:
+        update_data['cinema_ids'] = ";".join(map(str, update_data['cinema_ids']))
+    
+    for key, value in update_data.items():
         setattr(invitation, key, value)
+    
     db.commit()
     db.refresh(invitation)
     return invitation
@@ -39,14 +50,18 @@ def update_invitation(invitation_id: int, updated_invitation: InvitationCreate, 
 @router.post("/invitations/add", response_model=InvitationCreate, tags=["Invitations"])
 def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db)):
     try:
+        # Convert lists to semicolon-separated strings for MySQL storage
+        image_urls_str = ";".join(invitation.image_urls) if invitation.image_urls else None
+        cinema_ids_str = ";".join(map(str, invitation.cinema_ids)) if invitation.cinema_ids else None
+        
         db_invitation = Invitation(
             userid=invitation.userid,
             movieid=invitation.movieid,
             text=invitation.text,
-            image_urls=";".join(invitation.image_urls),
-            cinema_ids=";".join(invitation.cinema_ids),
+            image_urls=image_urls_str,
+            cinema_ids=cinema_ids_str,
             status=invitation.status,
-            amount_of_reach=invitation.amount_of_reach,
+            amount_of_reach=invitation.amount_of_reach or 0,
         )
         db.add(db_invitation)
         db.commit()
@@ -55,22 +70,17 @@ def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db
     
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to create invitation")
-    finally:
-        db.close()
+        raise HTTPException(status_code=500, detail=f"Failed to create invitation: {str(e)}")
     
-@router.get("/invitations/", response_model=List[InvitationCreate], tags=["Invitations"])
+@router.get("/invitations/", response_model=List[schemas.Invitation], tags=["Invitations"])
 def get_invitations(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     try:
         invitations = invitation_crud.retrieve_all_invitations(db, skip=skip, limit=limit)
-        res = []
-        for invitation in invitations:
-            print(invitation)
-            res.append(invitation)
+        if not invitations:
+            raise HTTPException(status_code=404, detail="No invitations found")
+        return invitations
 
-        return res
-
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to retrieve invitations" + str(e))
-    finally:
-        db.close()
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve invitations: {str(e)}")

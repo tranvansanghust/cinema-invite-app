@@ -2,19 +2,10 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
-from app.database import SessionLocal, engine
-
-models.Base.metadata.create_all(bind=engine)
+from app import crud, schemas
+from app.database import get_db
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/movies/", response_model=schemas.Movie)
 def create_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):

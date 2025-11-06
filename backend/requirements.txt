@@ -7,3 +7,6 @@ passlib[bcrypt]
 python-multipart
 python-dotenv
 fastapi-sso
+alembic
+pymysql
+mysql-connector-python

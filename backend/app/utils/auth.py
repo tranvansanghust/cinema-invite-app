@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -5,7 +6,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status
 
 # Constants
-SECRET_KEY = "your-secret-key-here"  # Should be in environment variables in production
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

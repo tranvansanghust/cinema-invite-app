@@ -10,7 +10,14 @@ def get_movies(db: Session, skip: int = 0, limit: int = 10):
     return db.query(Movie).offset(skip).limit(limit).all()
 
 def create_movie(db: Session, movie: MovieCreate):
-    db_movie = Movie(title=movie.title, description=movie.description)
+    db_movie = Movie(
+        title=movie.title,
+        description=movie.description,
+        release_date=getattr(movie, "release_date", None),
+        genre=getattr(movie, "genre", None),
+        director=getattr(movie, "director", None),
+        actors=getattr(movie, "actors", None)
+    )
     db.add(db_movie)
     db.commit()
     db.refresh(db_movie)
