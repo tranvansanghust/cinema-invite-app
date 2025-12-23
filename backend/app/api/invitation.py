@@ -8,8 +8,11 @@ from ..crud import invitation as invitation_crud
 from ..database import get_db
 from ..schemas.invitation import InvitationCreate
 from ..models.invitation import Invitation
+from logging import getLogger
 
 router = APIRouter()
+
+logger = getLogger(__name__)
 
 @router.get("/invitations/{invitation_id}", response_model=InvitationCreate, tags=["Invitations"])
 def get_invitation(invitation_id: int, db: Session = Depends(get_db)):
@@ -70,6 +73,7 @@ def create_invitation(invitation: InvitationCreate, db: Session = Depends(get_db
     
     except Exception as e:
         db.rollback()
+        logger.error(f"Failed to create invitation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to create invitation: {str(e)}")
     
 @router.get("/invitations/", response_model=List[schemas.Invitation], tags=["Invitations"])
