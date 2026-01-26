@@ -1,0 +1,3 @@
+[submodule "frontend-2"]
+	path = frontend-2
+	url = git@github.com:tranvansanghust/cinema-invite-app-frontend.git
